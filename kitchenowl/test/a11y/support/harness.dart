@@ -373,8 +373,23 @@ Future<A11yAuditResult> audit(
   final testFontText = textInTestFont(tester);
   await maybeScreenshot(tester, screenId);
 
-  final result =
-      await auditScreen(tester, screenId: screenId, config: auditConfig);
+  A11yAuditResult result;
+  try {
+    result =
+        await auditScreen(tester, screenId: screenId, config: auditConfig);
+  } on A11yReflowException catch (e) {
+    // A reflow pass (200 % text or 320 px) was aborted because the app raised
+    // an error that is not an overflow while it was re-laid out. That pass
+    // contributes no finding; every other phase and pass did complete, and
+    // `e.result` (already written to the findings sink) holds their findings.
+    // The aborted passes are logged with the screen's other exceptions.
+    result = e.result;
+    exceptions.addAll([
+      for (final failure in e.failures)
+        'reflow pass aborted (${failure.pass}): '
+            '${describeException(failure.error)}',
+    ]);
+  }
   exceptions.addAll([...?recorder?.take(), ...takeExceptions(tester)]);
 
   ScreenLog.audited(screenId, result,

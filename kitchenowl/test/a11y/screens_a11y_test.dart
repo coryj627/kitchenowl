@@ -1064,13 +1064,13 @@ void main() {
       await openNewExpense(run);
       await run.tap(find.byType(DropdownButton<ExpenseCategory?>));
       expect(find.text('Utilities').hitTestable(), findsOneWidget);
-    }, viewports: [AuditViewport.phone]);
+    });
 
     screen('expense-paid-by-menu', (run) async {
       await openNewExpense(run);
       await run.tap(find.byType(DropdownButton<int>));
       expect(find.text('Jonas Jensen').hitTestable(), findsWidgets);
-    }, viewports: [AuditViewport.phone]);
+    });
   });
 
   group('households', () {

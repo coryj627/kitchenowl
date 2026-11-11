@@ -49,13 +49,13 @@ Options, as environment variables:
   test font.
 
 Two consecutive runs on one machine (macOS, Flutter 3.47.9) produced
-byte-identical output files: 5,968 findings on 294 screen ids.
+byte-identical output files: 5,980 findings on 296 screen ids.
 
 The dependencies are two git packages of flutter-a11y, pinned in
-`pubspec.yaml` to commit `0.4.0` (its
-`main` at the time; the packages still call themselves 0.3.0). That commit
-reads apps built on `package:material_ui`, which this app is; the 0.3.0 tag
-does not. Five packages the app already resolved transitively are named as dev
+`pubspec.yaml` to tag `0.4.1`. Since 0.4.0 the packages read apps built on
+`package:material_ui`, which this app is; the 0.3.0 tag does not. 0.4.1 keeps
+a screen's findings when one of the audit's reflow passes is aborted (see
+"Exceptions are recorded, not hidden"). Five packages the app already resolved transitively are named as dev
 dependencies because the fakes import them (`file`, `flutter_cache_manager`,
 and three plugin platform interfaces). `pubspec.lock` gained `auto_route`
 (a dependency of `flutter_a11y_routes`) and the flutter-a11y packages; no
@@ -164,8 +164,8 @@ at the end of each test so that it stops listening to the API client.
 
 ## Screens audited
 
-149 screens and states. 146 are audited in both windows, 2 on the phone only
-and 1 in the wide window only: 294 ids, each `<screen>@phone` or
+149 screens and states. 147 are audited in both windows, 1 on the phone only
+and 1 in the wide window only: 296 ids, each `<screen>@phone` or
 `<screen>@wide`.
 
 Of the 58 widget classes under `lib/pages/`, 57 are on screen in at least one
@@ -249,7 +249,8 @@ Expenses
 - `expense-detail`, `expense-detail-with-receipt`
 - `expense-new`, `expense-new-validation-error`, `expense-edit`,
   `expense-date-picker`, `expense-time-picker`
-- `expense-category-menu`, `expense-paid-by-menu` (phone only)
+- `expense-category-menu`, `expense-paid-by-menu` (in the wide window with
+  their 320 px reflow pass aborted: see "Exceptions are recorded, not hidden")
 
 Settings
 
@@ -282,7 +283,6 @@ Settings
 
 | Screen or state | Why |
 |---|---|
-| `expense-category-menu@wide`, `expense-paid-by-menu@wide` | The audit throws. Its reflow pass narrows the 1280x800 window to 320 px, which turns the window from landscape to portrait; Material's `DropdownButton` dismisses its open menu when the orientation changes, from inside `build`, and the framework asserts: `setState() or markNeedsBuild() called during build. This ListenableBuilder widget cannot be marked as needing to build because the framework is already in the process of building widgets.` (stack: `_DropdownButtonState.build` → `_removeDropdownRoute` → `NavigatorState.removeRoute`, under `ReflowChecker.run`). The exception leaves `auditScreen`, so nothing is recorded. On the phone the window stays portrait and both menus are audited. |
 | Single sign-on return (`/signin/redirect`, `LoginRedirectPage`) | Needs a round trip through an identity provider in a browser. |
 | The tutorial as shown after onboarding | After the first account is created the app pushes `/tutorial` and, on the same state change, goes to the household list. In the harness the second navigation wins and the tutorial is never on screen. `tutorial` and `tutorial-recipes` are opened by URL instead; only two of its pages are audited. |
 | Generated recipe (the answer of "Generate recipe with AI") | Needs a streamed response from a language model. The prompt page is audited. |
@@ -370,8 +370,29 @@ screens, and dropping the rule there would be weakening the audit.
 **Exceptions are recorded, not hidden.** While a screen is reached and
 audited the harness collects what the framework reports
 (`FlutterError.onError`) and stores it on the screen's entry in
-`runtime-screens.json`, then audits anyway. In the committed state no screen
-recorded one, and no request went unanswered. A failure to *reach* a screen (a
+`runtime-screens.json` under `exceptions`, then audits anyway.
+
+The same key holds the audit's aborted reflow passes, one entry each, as
+`reflow pass aborted (<pass>): <error>`. When the app raises an error that is
+not an overflow while `auditScreen` re-lays the screen out at 200 % text or at
+320 px, flutter-a11y (from 0.4.1) aborts that pass, runs the others and throws
+`A11yReflowException`; the harness keeps `exception.result` as the screen's
+result (it is already in `runtime-findings.json`) and logs
+`exception.failures`. The aborted pass contributes no finding, so its rule is
+unchecked on that screen; the screen's `diagnostics` then include
+`reflow-pass-aborted`. Any other exception from `auditScreen` still fails the
+test. Two ids have an aborted pass: `expense-category-menu@wide` and
+`expense-paid-by-menu@wide`. Their 320 px pass narrows the 1280x800 window to
+portrait, Material's `DropdownButton` dismisses its open menu when the
+orientation changes, from inside `build`, and the framework asserts
+(`setState() or markNeedsBuild() called during build`, from
+`_DropdownButtonState.build` → `_removeDropdownRoute` →
+`NavigatorState.removeRoute`). Until 0.4.0 that error left `auditScreen` with
+nothing recorded and the two ids were not audited. On the phone the window
+stays portrait and both menus are audited in full.
+
+Apart from those two, no screen recorded an exception, and no request went
+unanswered. A failure to *reach* a screen (a
 finder that matches nothing) does fail the test: that is a broken harness, not
 evidence about the screen.
 
