@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
+  auto_route:
+    dependency: transitive
+    description:
+      name: auto_route
+      sha256: "538d8eb2ffc48de30abb30d4545a90405b5f8a29248b82d5e4b2977a79bfd229"
+      url: "https://pub.dev"
+    source: hosted
+    version: "11.2.0"
   background_fetch:
     dependency: "direct main"
     description:
@@ -194,7 +202,7 @@ packages:
     source: hosted
     version: "13.3.0"
   device_info_plus_platform_interface:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: device_info_plus_platform_interface
       sha256: "04b173a92e2d9161dfead145667037c8d834db725ce2e7b942bfe18fd2f45a46"
@@ -258,7 +266,7 @@ packages:
     source: hosted
     version: "0.1.2"
   file:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: file
       sha256: a3b4f84adafef897088c160faf7dfffb7696046cb13ae90b508c2cbc95d3b8d4
@@ -358,6 +366,33 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_a11y_core:
+    dependency: transitive
+    description:
+      path: "packages/flutter_a11y_core"
+      ref: "5d9d3d0cb993998f8bf45632ebb4f09e7f619b6d"
+      resolved-ref: "5d9d3d0cb993998f8bf45632ebb4f09e7f619b6d"
+      url: "https://github.com/coryj627/flutter-a11y.git"
+    source: git
+    version: "0.3.0"
+  flutter_a11y_routes:
+    dependency: "direct dev"
+    description:
+      path: "packages/flutter_a11y_routes"
+      ref: "5d9d3d0cb993998f8bf45632ebb4f09e7f619b6d"
+      resolved-ref: "5d9d3d0cb993998f8bf45632ebb4f09e7f619b6d"
+      url: "https://github.com/coryj627/flutter-a11y.git"
+    source: git
+    version: "0.3.0"
+  flutter_a11y_test:
+    dependency: "direct dev"
+    description:
+      path: "packages/flutter_a11y_test"
+      ref: "5d9d3d0cb993998f8bf45632ebb4f09e7f619b6d"
+      resolved-ref: "5d9d3d0cb993998f8bf45632ebb4f09e7f619b6d"
+      url: "https://github.com/coryj627/flutter-a11y.git"
+    source: git
+    version: "0.3.0"
   flutter_bloc:
     dependency: "direct main"
     description:
@@ -375,7 +410,7 @@ packages:
     source: hosted
     version: "0.9.1"
   flutter_cache_manager:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: flutter_cache_manager
       sha256: a42024cf8bbb7e1f4d2875301660f62543601a4c3b20119ea9a683e4d191d0f4
@@ -925,7 +960,7 @@ packages:
     source: hosted
     version: "2.2.2"
   path_provider_platform_interface:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: path_provider_platform_interface
       sha256: "484838772624c3a4b94f1e44a3e19897fee738f2d5c4ce448443b0417f7c9dda"
@@ -1498,7 +1533,7 @@ packages:
     source: hosted
     version: "1.8.2"
   wakelock_plus_platform_interface:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: wakelock_plus_platform_interface
       sha256: "764c25504562abc8ac3406f5d175f126b276e6ba916c7c2675690b73368ca384"

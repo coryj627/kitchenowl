@@ -1,0 +1,91 @@
+# Dogfood workflow for the a11y-dogfood branch of the TomBursch/kitchenowl fork:
+# runs the runtime accessibility audit in kitchenowl/test/a11y/ and scans the
+# Flutter app with a11y-check-flutter (static lint plus the runtime report).
+# See kitchenowl/test/a11y/README.md.
+#
+# Prepared for later and never run: the branch has not been pushed, and no
+# kitchenowl/.a11y/flutter/baseline.json has been accepted yet. With the
+# config's `fail_at: info` and no baseline, expect the first run to fail on
+# every finding until a baseline is committed.
+#
+# The Flutter app is the `kitchenowl` directory of the repository (the backend
+# is `backend/` and is not involved), so that is the action's working
+# directory; .a11y/ lives next to the app's pubspec.yaml. Only test/a11y is run
+# before the scan (`test-args`): the app's other tests record no findings.
+#
+# Not verified on Linux: the audit was developed on macOS. Two fakes in
+# kitchenowl/test/a11y/support/fake_platform.dart branch on the host (device
+# info); the README lists what could differ.
+#
+# One-time setup in the repository this runs in:
+#   1. Secret FLUTTER_A11Y_READ_TOKEN: a fine-grained PAT with Contents: Read-only
+#      on coryj627/flutter-a11y (private). It lets `pub get` fetch
+#      flutter_a11y_test and flutter_a11y_routes, and `dart pub global activate`
+#      fetch the CLI.
+#   2. Code scanning must be enabled for the SARIF upload step.
+#
+# coryj627/flutter-a11y is private: a public repository can never `uses:` an
+# action from a private one, so the action is checked out with the read token
+# and run as a local action.
+#
+# The two `ref:` values and the two git dependencies in kitchenowl/pubspec.yaml
+# are pinned to the same commit of flutter-a11y (its main, which reads apps built
+# on package:material_ui). A release tag will replace it.
+name: a11y-check-flutter
+
+on:
+  push:
+    branches: [a11y-dogfood]
+  pull_request:
+    paths:
+      - kitchenowl/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write # github/codeql-action/upload-sarif
+
+jobs:
+  a11y:
+    name: a11y-check-flutter
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # kitchenowl/pubspec.yaml asks for Flutter >=3.47.5.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+
+      - name: Read access to coryj627/flutter-a11y (private)
+        env:
+          TOKEN: ${{ secrets.FLUTTER_A11Y_READ_TOKEN }}
+        run: |
+          git config --global url."https://x-access-token:${TOKEN}@github.com/".insteadOf "https://github.com/"
+
+      - name: Fetch the a11y-check-flutter action
+        uses: actions/checkout@v4
+        with:
+          repository: coryj627/flutter-a11y
+          ref: 5d9d3d0cb993998f8bf45632ebb4f09e7f619b6d
+          token: ${{ secrets.FLUTTER_A11Y_READ_TOKEN }}
+          path: .flutter-a11y
+
+      - name: Scan (pub get → flutter test test/a11y → a11y_check_flutter scan)
+        id: a11y
+        uses: ./.flutter-a11y
+        with:
+          working-directory: kitchenowl
+          ref: 5d9d3d0cb993998f8bf45632ebb4f09e7f619b6d
+          run-tests: "true"
+          test-args: test/a11y
+
+      - name: Upload SARIF to code scanning
+        if: always() && steps.a11y.outputs.sarif != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.a11y.outputs.sarif }}
+          category: a11y-check-flutter
