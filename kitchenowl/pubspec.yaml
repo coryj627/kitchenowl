@@ -89,12 +89,12 @@ dev_dependencies:
   flutter_a11y_test:
     git:
       url: https://github.com/coryj627/flutter-a11y.git
-      ref: 0.4.1
+      ref: 0.4.2
       path: packages/flutter_a11y_test
   flutter_a11y_routes:
     git:
       url: https://github.com/coryj627/flutter-a11y.git
-      ref: 0.4.1
+      ref: 0.4.2
       path: packages/flutter_a11y_routes
   # Packages the app already resolves transitively, named here because the
   # fakes in test/a11y/support/ import them directly.

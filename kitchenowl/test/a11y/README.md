@@ -52,10 +52,11 @@ Two consecutive runs on one machine (macOS, Flutter 3.47.9) produced
 byte-identical output files: 5,980 findings on 296 screen ids.
 
 The dependencies are two git packages of flutter-a11y, pinned in
-`pubspec.yaml` to tag `0.4.1`. Since 0.4.0 the packages read apps built on
+`pubspec.yaml` to tag `0.4.2`. Since 0.4.0 the packages read apps built on
 `package:material_ui`, which this app is; the 0.3.0 tag does not. 0.4.1 keeps
 a screen's findings when one of the audit's reflow passes is aborted (see
-"Exceptions are recorded, not hidden"). Five packages the app already resolved transitively are named as dev
+"Exceptions are recorded, not hidden"); 0.4.2 also names, as failures, the
+passes not attempted after the view could not be restored (none here). Five packages the app already resolved transitively are named as dev
 dependencies because the fakes import them (`file`, `flutter_cache_manager`,
 and three plugin platform interfaces). `pubspec.lock` gained `auto_route`
 (a dependency of `flutter_a11y_routes`) and the flutter-a11y packages; no
