@@ -401,8 +401,9 @@ const Map<String, List<String>> routeCoverage = {
   'tutorial': ['tutorial', 'tutorial-recipes'],
   'household': ['household-chooser', 'household-chooser-empty'],
   // Declared as a child of /household with the path '/about/:id'; the real
-  // location is /household/about/:id.
-  'about/:id': ['household-about'],
+  // location is /household/about/:id, which route discovery reports since
+  // flutter-a11y 0.5.0.
+  'household/about/:id': ['household-about'],
   'household/:id': ['shopping-list'],
   'household/:id/items': ['shopping-list', 'shopping-list-empty'],
   'household/:id/recipes': ['recipes', 'recipes-empty'],

@@ -49,14 +49,20 @@ Options, as environment variables:
   test font.
 
 Two consecutive runs on one machine (macOS, Flutter 3.47.9) produced
-byte-identical output files: 5,980 findings on 296 screen ids.
+byte-identical output files: 5,323 findings on 296 screen ids (flutter-a11y
+0.5.0; 5,980 at 0.4.2).
 
 The dependencies are two git packages of flutter-a11y, pinned in
-`pubspec.yaml` to tag `0.4.2`. Since 0.4.0 the packages read apps built on
+`pubspec.yaml` to tag `0.5.0`. Since 0.4.0 the packages read apps built on
 `package:material_ui`, which this app is; the 0.3.0 tag does not. 0.4.1 keeps
 a screen's findings when one of the audit's reflow passes is aborted (see
 "Exceptions are recorded, not hidden"); 0.4.2 also names, as failures, the
-passes not attempted after the view could not be restored (none here). Five packages the app already resolved transitively are named as dev
+passes not attempted after the view could not be restored (none here). 0.5.0
+reports the nested route `/household/about/:id` under that path (the
+`routeCoverage` key changed with it), no longer reports overflow in content a
+screen does not paint (an offstage tab, a page below an opaque route), and
+places a modal barrier's finding at the dialog or sheet instead of the app
+root. Five packages the app already resolved transitively are named as dev
 dependencies because the fakes import them (`file`, `flutter_cache_manager`,
 and three plugin platform interfaces). `pubspec.lock` gained `auto_route`
 (a dependency of `flutter_a11y_routes`) and the flutter-a11y packages; no
@@ -347,8 +353,11 @@ widget above `App()`.
 Two screens still have text in the test font, listed under `textInTestFont`
 in `runtime-screens.json`: `server-reports` (the date, author and reason of
 each report) and `recipe-edit-visibility-help` (the dialog's body). Both are
-bare `RichText` widgets with no style at all. An overflow finding on that
-text needs a second look; a contrast finding does not depend on the font.
+bare `RichText` widgets with no style at all. Since flutter-a11y 0.5.0 the
+audit says so too, with the `partial-test-font` diagnostic on those screens,
+and marks for review any overflow finding that text takes part in (none here:
+the one overflow on `recipe-edit-visibility-help` is in an item card of the
+page behind the dialog). A contrast finding does not depend on the font.
 (In the app that text is also white on a light surface, `RichText`'s default
 colour, which is a defect of the app and not of the harness.)
 
