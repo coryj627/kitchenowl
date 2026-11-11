@@ -49,11 +49,11 @@ Options, as environment variables:
   test font.
 
 Two consecutive runs on one machine (macOS, Flutter 3.47.9) produced
-byte-identical output files: 5,323 findings on 296 screen ids (flutter-a11y
-0.5.0; 5,980 at 0.4.2).
+byte-identical output files: 4,861 findings on 296 screen ids (flutter-a11y
+0.5.1; 5,323 at 0.5.0, 5,980 at 0.4.2).
 
 The dependencies are two git packages of flutter-a11y, pinned in
-`pubspec.yaml` to tag `0.5.0`. Since 0.4.0 the packages read apps built on
+`pubspec.yaml` to tag `0.5.1`. Since 0.4.0 the packages read apps built on
 `package:material_ui`, which this app is; the 0.3.0 tag does not. 0.4.1 keeps
 a screen's findings when one of the audit's reflow passes is aborted (see
 "Exceptions are recorded, not hidden"); 0.4.2 also names, as failures, the
@@ -62,7 +62,11 @@ reports the nested route `/household/about/:id` under that path (the
 `routeCoverage` key changed with it), no longer reports overflow in content a
 screen does not paint (an offstage tab, a page below an opaque route), and
 places a modal barrier's finding at the dialog or sheet instead of the app
-root. Five packages the app already resolved transitively are named as dev
+root. 0.5.1 settles running transitions before it audits: the view is grown
+with a `pump(100 ms)`, which used to leave the recipe page's back button
+(an `AnimatedSwitcher`) mid cross-fade, so both of its children were
+audited; a screen still animating after the settle (a progress indicator)
+carries the `unsettled` diagnostic. Five packages the app already resolved transitively are named as dev
 dependencies because the fakes import them (`file`, `flutter_cache_manager`,
 and three plugin platform interfaces). `pubspec.lock` gained `auto_route`
 (a dependency of `flutter_a11y_routes`) and the flutter-a11y packages; no

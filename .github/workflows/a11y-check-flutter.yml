@@ -29,7 +29,7 @@
 # and run as a local action.
 #
 # The two `ref:` values and the two git dependencies in kitchenowl/pubspec.yaml
-# are pinned to the same release tag of flutter-a11y (0.5.0; tags from 0.4.0 read
+# are pinned to the same release tag of flutter-a11y (0.5.1; tags from 0.4.0 read
 # apps built on package:material_ui).
 name: a11y-check-flutter
 
@@ -70,7 +70,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: coryj627/flutter-a11y
-          ref: 0.5.0
+          ref: 0.5.1
           token: ${{ secrets.FLUTTER_A11Y_READ_TOKEN }}
           path: .flutter-a11y
 
@@ -79,7 +79,7 @@ jobs:
         uses: ./.flutter-a11y
         with:
           working-directory: kitchenowl
-          ref: 0.5.0
+          ref: 0.5.1
           run-tests: "true"
           test-args: test/a11y
 
