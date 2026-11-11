@@ -52,7 +52,7 @@ Two consecutive runs on one machine (macOS, Flutter 3.47.9) produced
 byte-identical output files: 5,968 findings on 294 screen ids.
 
 The dependencies are two git packages of flutter-a11y, pinned in
-`pubspec.yaml` to commit `5d9d3d0cb993998f8bf45632ebb4f09e7f619b6d` (its
+`pubspec.yaml` to commit `0.4.0` (its
 `main` at the time; the packages still call themselves 0.3.0). That commit
 reads apps built on `package:material_ui`, which this app is; the 0.3.0 tag
 does not. Five packages the app already resolved transitively are named as dev
